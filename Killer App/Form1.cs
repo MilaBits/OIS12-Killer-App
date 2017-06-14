@@ -161,14 +161,7 @@ namespace Killer_App {
         }
         private void ImportItems() {
             ImportDialog dialog = new ImportDialog();
-            DialogResult result = dialog.ShowDialog();
-            if (result == DialogResult.OK) {
-                //if (dialog.DialogItemType == 0) {
-                //    Song.Insert(dialog.DialogSong);
-                //} else {
-                //    Image.Insert(dialog.DialogImage);
-                //}
-            }
+            dialog.ShowDialog();
         }
         private List<Image> GetImages() {
             List<Image> newList = new List<Image>();
