@@ -5,28 +5,14 @@ using System.Data.SqlClient;
 using System.Linq;
 
 namespace Killer_App {
-    public class Image {
+    public class Image : MediaFile {
 
         // FIELDS
-        private int _id;
-        private string _title;
-        private string _path;
         private int _height;
         private int _width;
         private List<Tag> _tags;
 
         // PROPERTIES
-        public int Id {
-            get { return _id; }
-        }
-        public string Title {
-            get { return _title; }
-            set { _title = value; }
-        }
-        public string Path {
-            get { return _path; }
-            set { _path = value; }
-        }
         public int Height {
             get { return _height; }
             set { _height = value; }
@@ -47,31 +33,22 @@ namespace Killer_App {
 
         // CONSTRUCTORS
         public Image() {
-            _id = 0;
-            _title = string.Empty;
-            _path = string.Empty;
             _height = 0;
             _width = 0;
             _tags = new List<Tag>();
         }
-        public Image(int id, string title, string path, int height, int width, List<Tag> tags) {
-            _id = id;
-            _title = title;
-            _path = path;
+        public Image(int id, string title, string path, int height, int width, List<Tag> tags) : base(id, title, path) {
             _height = height;
             _width = width;
             _tags = tags;
         }
-        public Image(int id, string title, string path, int height, int width, string[] tags) {
-            _id = id;
-            _title = title;
-            _path = path;
-            _height = height;
-            _width = width;
-            foreach (string tag in tags) {
-                _tags.Add(new Tag(0, tag));
-            }
-        }
+        //public Image(int id, string title, string path, int height, int width, string[] tags) : base(id, title, path) {
+        //    _height = height;
+        //    _width = width;
+        //    foreach (string tag in tags) {
+        //        _tags.Add(new Tag(0, tag));
+        //    }
+        //}
 
         // METHODS
         private static int GCD(int a, int b) {
@@ -264,9 +241,6 @@ namespace Killer_App {
                     command.ExecuteNonQuery();
                 }
             }
-        }
-        public override string ToString() {
-            return _title;
         }
     }
 }

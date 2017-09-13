@@ -6,12 +6,9 @@ using System.Linq;
 using System.Text;
 
 namespace Killer_App {
-    public class Song {
+    public class Song : MediaFile {
 
         // FIELDS
-        private int _id;
-        private string _title;
-        private string _path;
         private int _lenght;
         private string _album;
         private int _year;
@@ -20,17 +17,7 @@ namespace Killer_App {
         private List<Tag> _tags;
 
         // PROPERTIES
-        public int Id {
-            get { return _id; }
-        }
-        public string Title {
-            get { return _title; }
-            set { _title = value; }
-        }
-        public string Path {
-            get { return _path; }
-            set { _path = value; }
-        }
+
         public int Length {
             get { return _lenght; }
         }
@@ -60,10 +47,7 @@ namespace Killer_App {
             _genres = new List<Genre>();
             _tags = new List<Tag>();
         }
-        public Song(int id, string title, string path, int length, string album, int year, List<Artist> artists, List<Genre> genres, List<Tag> tags) {
-            _id = id;
-            _title = title;
-            _path = path;
+        public Song(int id, string title, string path, int length, string album, int year, List<Artist> artists, List<Genre> genres, List<Tag> tags) : base(id, title, path) {
             _lenght = length;
             _album = album;
             _year = year;
@@ -376,7 +360,7 @@ namespace Killer_App {
             using (SqlConnection conn = new SqlConnection(ConfigurationManager.ConnectionStrings["Database"].ConnectionString)) {
                 conn.Open();
 
-                string commandString = string.Format("select Artist.name as Artist from Artist where Artist.id = (select Artist_Song.artist_id from Artist_Song where Artist_Song.song_id = {0})", _id);
+                string commandString = string.Format("select Artist.name as Artist from Artist where Artist.id = (select Artist_Song.artist_id from Artist_Song where Artist_Song.song_id = {0})", base.Id);
 
                 using (SqlCommand command = new SqlCommand(commandString, conn))
                 using (SqlDataReader reader = command.ExecuteReader()) {
@@ -419,7 +403,7 @@ namespace Killer_App {
             using (SqlConnection conn = new SqlConnection(ConfigurationManager.ConnectionStrings["Database"].ConnectionString)) {
                 conn.Open();
 
-                string commandString = string.Format("select Genre.name as Genre from Genre where Genre.id = (select Genre_Song.Genre_id from Genre_Song where Genre_Song.song_id = {0})", _id);
+                string commandString = string.Format("select Genre.name as Genre from Genre where Genre.id = (select Genre_Song.Genre_id from Genre_Song where Genre_Song.song_id = {0})", base.Id);
 
                 using (SqlCommand command = new SqlCommand(commandString, conn))
                 using (SqlDataReader reader = command.ExecuteReader()) {
@@ -467,7 +451,7 @@ namespace Killer_App {
             using (SqlConnection conn = new SqlConnection(ConfigurationManager.ConnectionStrings["Database"].ConnectionString)) {
                 conn.Open();
 
-                string commandString = string.Format("select Tag.name as Tag from Tag where Tag.id = (select Tag_Song.Tag_id from Tag_Song where Tag_Song.song_id = {0})", _id);
+                string commandString = string.Format("select Tag.name as Tag from Tag where Tag.id = (select Tag_Song.Tag_id from Tag_Song where Tag_Song.song_id = {0})", base.Id);
 
                 using (SqlCommand command = new SqlCommand(commandString, conn))
                 using (SqlDataReader reader = command.ExecuteReader()) {
@@ -556,9 +540,6 @@ namespace Killer_App {
                 }
             }
             return newList;
-        }
-        public override string ToString() {
-            return _title;
         }
     }
 }
