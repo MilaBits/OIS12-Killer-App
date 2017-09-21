@@ -13,22 +13,16 @@ namespace Killer_App {
 
         // FIELDS
         private int _dialogItemType = 0;
-        private Song _dialogSong = new Song();
-        private Image _dialogImage = new Image();
+        private MediaFile _dialogItem = new Song();
 
         AutoCompleteStringCollection artistAutocomplete = new AutoCompleteStringCollection();
         AutoCompleteStringCollection tagAutocomplete = new AutoCompleteStringCollection();
         AutoCompleteStringCollection genreAutocomplete = new AutoCompleteStringCollection();
 
         // PROPERTIES
-        public int DialogItemType {
-            get { return _dialogItemType; }
-        }
-        public Song DialogSong {
-            get { return _dialogSong; }
-        }
-        public Image DialogImage {
-            get { return _dialogImage; }
+        public MediaFile DialogItem {
+            get { return _dialogItem; }
+            private set { _dialogItem = value; }
         }
 
         // CONSTRUCTORS
@@ -77,7 +71,7 @@ namespace Killer_App {
 
             PopulateDropDowns();
         }
-        
+
         // METHODS
         private void MakeTag(Control target, string text, AutoCompleteType type) {
             TextBox tb = new TextBox();
@@ -120,7 +114,7 @@ namespace Killer_App {
                 control.Dispose();
             }
         }
-        
+
 
         //Event Handlers
         private void btnSong_Click(object sender, EventArgs e) {
@@ -150,8 +144,7 @@ namespace Killer_App {
         private void tbAlbum_TextChanged(object sender, EventArgs e) {
             AutoSize((Control)sender);
         }
-        private void btnOK_Click(object sender, EventArgs e)
-        {
+        private void btnOK_Click(object sender, EventArgs e) {
             ConfirmAddition();
         }
         private void btnCancel_Click(object sender, EventArgs e) {
@@ -215,7 +208,7 @@ namespace Killer_App {
                     title = fileTagLib.Tag.Title;
                 }
 
-                _dialogSong = new Song(0,
+                DialogItem = new Song(0,
                     title,
                     file.FullName,
                     Convert.ToInt16(fileTagLib.Properties.Duration.TotalSeconds),
@@ -229,7 +222,7 @@ namespace Killer_App {
             } else {
                 tbcType.SelectedIndex = 1;
 
-                _dialogImage = new Image(0,
+                DialogItem = new Image(0,
                     file.Name.Remove(file.Name.LastIndexOf('.')),
                     file.FullName,
                     fileTagLib.Properties.PhotoHeight,
@@ -240,48 +233,48 @@ namespace Killer_App {
         }
         private void FillMusicFields() {
 
-            tbSongTitle.Text = _dialogSong.Title;
-            tbSongPath.Text = _dialogSong.Path;
-            tbDuration.Text = TimeSpan.FromSeconds(_dialogSong.Length).ToString(@"m\:ss");
-            tbAlbum.Text = _dialogSong.Album;
+            tbSongTitle.Text = DialogItem.Title;
+            tbSongPath.Text = DialogItem.Path;
+            tbDuration.Text = TimeSpan.FromSeconds(((Song)DialogItem).Length).ToString(@"m\:ss");
+            tbAlbum.Text = ((Song)DialogItem).Album;
 
             flpnArtists.Controls.Clear();
             flpnGenres.Controls.Clear();
             flpnTags.Controls.Clear();
-            foreach (Artist songArtist in _dialogSong.Artists) {
+            foreach (Artist songArtist in ((Song)DialogItem).Artists) {
                 MakeTag(flpnArtists, songArtist.Name, AutoCompleteType.Artist);
             }
-            foreach (Genre songGenre in _dialogSong.Genres) {
+            foreach (Genre songGenre in ((Song)DialogItem).Genres) {
                 MakeTag(flpnGenres, songGenre.Name, AutoCompleteType.Genre);
             }
-            foreach (Tag songTag in _dialogSong.Tags) {
+            foreach (Tag songTag in ((Song)DialogItem).Tags) {
                 MakeTag(flpnTags, songTag.Name, AutoCompleteType.Tag);
             }
         }
         private void FillImageFields() {
 
-            tbImageTitle.Text = _dialogImage.Title;
-            tbImagePath.Text = _dialogImage.Path;
-            tbHeight.Text = _dialogImage.Height.ToString();
-            tbWidth.Text = _dialogImage.Width.ToString();
+            tbImageTitle.Text = DialogItem.Title;
+            tbImagePath.Text = DialogItem.Path;
+            tbHeight.Text = ((Image)DialogItem).Height.ToString();
+            tbWidth.Text = ((Image)DialogItem).Width.ToString();
 
-            tbAspect.Text = _dialogImage.AspectRatio;
+            tbAspect.Text = ((Image)DialogItem).AspectRatio;
 
-            pbPreview.Image = System.Drawing.Image.FromFile(_dialogImage.Path);
-            foreach (Tag imageTag in _dialogImage.Tags) {
+            pbPreview.Image = System.Drawing.Image.FromFile(DialogItem.Path);
+            foreach (Tag imageTag in ((Image)DialogItem).Tags) {
                 MakeTag(flpnImageTags, imageTag.Name, AutoCompleteType.Tag);
             }
         }
         private void PopulateDropDowns() {
 
             //TODO: Fix autocomplete    
-            foreach (Artist artist in Artist.GetAllArtists().OrderBy(item => item.Name)) {
+            foreach (Artist artist in Database.GetAllArtists().OrderBy(item => item.Name)) {
                 cbbArtists.Items.Add(artist.Name);
                 artistAutocomplete.Add(artist.Name);
             }
             cbbArtists.AutoCompleteCustomSource = artistAutocomplete;
 
-            foreach (Tag tag in Killer_App.Tag.GetAllTags().OrderBy(item => item.Name)) {
+            foreach (Tag tag in Killer_App.Database.GetAllTags().OrderBy(item => item.Name)) {
                 cbbSongTags.Items.Add(tag.Name);
                 cbbImageTags.Items.Add(tag.Name);
                 tagAutocomplete.Add(tag.Name);
@@ -289,7 +282,7 @@ namespace Killer_App {
             cbbImageTags.AutoCompleteCustomSource = tagAutocomplete;
             cbbSongTags.AutoCompleteCustomSource = tagAutocomplete;
 
-            foreach (Genre genre in Genre.GetAllGenres().OrderBy(item => item.Name)) {
+            foreach (Genre genre in Database.GetAllGenres().OrderBy(item => item.Name)) {
                 cbbGenres.Items.Add(genre.Name);
                 genreAutocomplete.Add(genre.Name);
             }
@@ -302,21 +295,21 @@ namespace Killer_App {
                     return;
                 }
 
-                _dialogSong.Title = tbSongTitle.Text;
-                _dialogSong.Path = tbSongPath.Text;
-                _dialogSong.Album = tbAlbum.Text;
+                DialogItem.Title = tbSongTitle.Text;
+                DialogItem.Path = tbSongPath.Text;
+                ((Song)DialogItem).Album = tbAlbum.Text;
 
                 //_dialogSong.Artists.Clear();
                 foreach (TextBox artist in flpnArtists.Controls) {
-                    _dialogSong.Artists.Add(new Artist(0, artist.Text.Trim(' ')));
+                    ((Song)DialogItem).Artists.Add(new Artist(0, artist.Text.Trim(' ')));
                 }
                 //_dialogSong.Genres.Clear();
                 foreach (TextBox genre in flpnGenres.Controls) {
-                    _dialogSong.Genres.Add(new Genre(0, genre.Text.Trim(' ')));
+                    ((Song)DialogItem).Genres.Add(new Genre(0, genre.Text.Trim(' ')));
                 }
                 //_dialogSong.Tags.Clear();
                 foreach (TextBox tag in flpnTags.Controls) {
-                    _dialogSong.Tags.Add(new Tag(0, tag.Text.Trim(' ')));
+                    ((Song)DialogItem).Tags.Add(new Tag(0, tag.Text.Trim(' ')));
                 }
             } else if (tbcType.SelectedIndex == 1) {
                 if (string.IsNullOrEmpty(tbImageTitle.Text)) {
@@ -324,16 +317,16 @@ namespace Killer_App {
                     return;
                 }
 
-                _dialogImage.Title = tbImageTitle.Text;
-                _dialogImage.Path = tbImagePath.Text;
+                DialogItem.Title = tbImageTitle.Text;
+                DialogItem.Path = tbImagePath.Text;
 
-                _dialogImage.Height = Convert.ToInt16(tbHeight.Text);
-                _dialogImage.Width = Convert.ToInt16(tbWidth.Text);
+                ((Image)DialogItem).Height = Convert.ToInt16(tbHeight.Text);
+                ((Image)DialogItem).Width = Convert.ToInt16(tbWidth.Text);
 
 
-                DialogImage.Tags.Clear();
+                ((Image)DialogItem).Tags.Clear();
                 foreach (TextBox tag in flpnImageTags.Controls) {
-                    _dialogImage.Tags.Add(new Tag(0, tag.Text.Trim(' ')));
+                    ((Image)DialogItem).Tags.Add(new Tag(0, tag.Text.Trim(' ')));
                 }
             }
 

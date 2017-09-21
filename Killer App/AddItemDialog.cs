@@ -188,7 +188,7 @@ namespace Killer_App {
 
             //TODO: Fix autocomplete    
             List<string> artistsAutocomplete = new List<string>();
-            foreach (Artist artist in Artist.GetAllArtists().OrderBy(item => item.Name)) {
+            foreach (Artist artist in Database.GetAllArtists().OrderBy(item => item.Name)) {
                 cbbArtists.Items.Add(artist.ToString());
                 artistsAutocomplete.Add(artist.ToString());
             }
@@ -201,7 +201,7 @@ namespace Killer_App {
 
 
             AutoCompleteStringCollection tagAutocomplete = new AutoCompleteStringCollection();
-            foreach (Tag tag in Killer_App.Tag.GetAllTags().OrderBy(item => item.Name)) {
+            foreach (Tag tag in Killer_App.Database.GetAllTags().OrderBy(item => item.Name)) {
                 cbbSongTags.Items.Add(tag.ToString());
                 cbbImageTags.Items.Add(tag.ToString());
                 tagAutocomplete.Add(tag.Name);
@@ -210,7 +210,7 @@ namespace Killer_App {
             tbSongTags.AutoCompleteCustomSource = tagAutocomplete;
 
             AutoCompleteStringCollection genreAutocomplete = new AutoCompleteStringCollection();
-            foreach (Genre genre in Genre.GetAllGenres().OrderBy(item => item.Name)) {
+            foreach (Genre genre in Database.GetAllGenres().OrderBy(item => item.Name)) {
                 cbbGenres.Items.Add(genre.ToString());
                 genreAutocomplete.Add(genre.ToString());
             }

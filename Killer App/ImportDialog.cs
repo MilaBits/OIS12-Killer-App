@@ -230,8 +230,8 @@ namespace Killer_App {
                 MessageBox.Show(string.Format("Failed to add {0} files due to empty values", errorCount));
             }
 
-            Song.Insert(songs);
-            Image.Insert(images);
+            Database.InsertMediaFiles(songs.Cast<MediaFile>().ToList());
+            Database.InsertMediaFiles(images.Cast<MediaFile>().ToList());
             songs.Clear();
             images.Clear();
         }

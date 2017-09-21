@@ -25,24 +25,7 @@ namespace Killer_App {
         }
 
         // METHODS
-        public static List<Tag> GetAllTags() {
-            List<Tag> tags = new List<Tag>();
-
-            using (SqlConnection conn = new SqlConnection(ConfigurationManager.ConnectionStrings["Database"].ConnectionString)) {
-                conn.Open();
-
-                string commandString = "select * from Tag";
-
-                using (SqlCommand command = new SqlCommand(commandString, conn))
-                using (SqlDataReader reader = command.ExecuteReader()) {
-                    while (reader.Read()) {
-                        tags.Add(new Tag(Convert.ToInt16(reader["id"]), reader["name"].ToString()));
-                    }
-                }
-            }
-
-            return tags;
-        }
+        
         public static List<Tag> TagsFromString(string tagString, char divider) {
             List<Tag> tags = new List<Tag>();
 
@@ -51,21 +34,7 @@ namespace Killer_App {
             }
             return tags;
         }
-        internal static void Insert(string tag) {
-            using (SqlConnection conn = new SqlConnection(ConfigurationManager.ConnectionStrings["Database"].ConnectionString)) {
-                conn.Open();
-
-                string commandString = string.Format(
-                    "if not exists (select 1 from Tag where name = '{0}')" +
-                    "insert into Tag (name)" +
-                    "values('{0}');",
-                    tag.Replace("'", "''"));
-
-                using (SqlCommand command = new SqlCommand(commandString, conn)) {
-                    command.ExecuteNonQuery();
-                }
-            }
-        }
+        
         public override string ToString() {
             return _name;
         }

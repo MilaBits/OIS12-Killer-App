@@ -152,38 +152,14 @@ namespace Killer_App {
             AddItemDialogExperimental dialog = new AddItemDialogExperimental();
             DialogResult result = dialog.ShowDialog();
             if (result == DialogResult.OK) {
-                if (dialog.DialogItemType == 0) {
-                    Song.Insert(dialog.DialogSong);
-                } else {
-                    Image.Insert(dialog.DialogImage);
-                }
+                    Database.InsertMediaFile(dialog.DialogItem);
             }
         }
         private void ImportItems() {
             ImportDialog dialog = new ImportDialog();
             dialog.ShowDialog();
         }
-        private List<Image> GetImages() {
-            List<Image> newList = new List<Image>();
-            using (SqlConnection conn =
-                new SqlConnection(ConfigurationManager.ConnectionStrings["Database"].ConnectionString)) {
-                conn.Open();
-
-                using (SqlCommand command = new SqlCommand("select * from Image", conn))
-                using (SqlDataReader reader = command.ExecuteReader()) {
-                    while (reader.Read()) {
-                        newList.Add(new Image(
-                            Convert.ToInt16(reader["id"]),
-                            reader["title"].ToString(),
-                            reader["path"].ToString(),
-                            Convert.ToInt16(reader["height"]),
-                            Convert.ToInt16(reader["width"]),
-                            Image.GetTags(Convert.ToInt16(reader["id"]))));
-                    }
-                }
-            }
-            return newList;
-        }
+        
         private void PopulateSongsTable() {
             dgvMusic.Rows.Clear();
             foreach (Song song in songs) {
@@ -209,10 +185,10 @@ namespace Killer_App {
         }
         private void RefreshList() {
             if (tbcMain.SelectedIndex == 0) {
-                songs = Song.GetSongs();
+                songs = Database.GetSongs();
                 PopulateSongsTable();
             } else if (tbcMain.SelectedIndex == 1) {
-                images = GetImages();
+                images = Database.GetImages();
                 PopulateImagesTable();
             }
         }
@@ -272,14 +248,14 @@ namespace Killer_App {
                 AddItemDialogExperimental dialog = new AddItemDialogExperimental(SongFromDataGridViewRow(dgvMusic.CurrentRow));
                 DialogResult result = dialog.ShowDialog();
                 if (result == DialogResult.OK) {
-                    Song.Update(dialog.DialogSong);
+                    Database.UpdateMediaFile(dialog.DialogItem);
                 }
             } else {
                 //AddItemDialog dialog = new AddItemDialog(ImageFromDataGridViewRow(dgvImages.CurrentRow));
                 AddItemDialogExperimental dialog = new AddItemDialogExperimental(ImageFromDataGridViewRow(dgvImages.CurrentRow));
                 DialogResult result = dialog.ShowDialog();
                 if (result == DialogResult.OK) {
-                    Image.Update(dialog.DialogImage);
+                    Database.UpdateMediaFile(dialog.DialogItem);
                 }
             }
         }
@@ -288,10 +264,10 @@ namespace Killer_App {
             pbSongProgress.Value = 0;
             lbSongPlaying.Text = "";
             foreach (DataGridViewRow row in dgvMusic.SelectedRows) {
-                Song.DeleteFromDB(SongFromDataGridViewRow(row));
+                Database.DeleteMediaFile(SongFromDataGridViewRow(row));
             }
             foreach (DataGridViewRow row in dgvImages.SelectedRows) {
-                Image.DeleteFromDB(ImageFromDataGridViewRow(row));
+                Database.DeleteMediaFile(ImageFromDataGridViewRow(row));
             }
         }
     }
